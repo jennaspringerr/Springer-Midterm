@@ -12,7 +12,13 @@ function _build_bounds_array(data::Dict{String,Any})::Array{Float64,2}
 
     # TODO: fill in the entries of the bounds array, first col is the lower bound, second col is the upper bound
     # HINT see PS6 
-    # ...
+    for i ∈ 1:number_of_reactions
+        reaction = list_of_reactions[i];
+        L = reaction["lower_bound"];
+        U = reaction["upper_bound"];
+        bounds_array[i,1] = L
+        bounds_array[i,2] = U
+    end
 
     # return -
     return bounds_array
@@ -28,7 +34,12 @@ function _build_reaction_id_array(data::Dict{String,Any})::Array{String,1}
 
     # TODO: fill the reaction_id_array with the reaction id's from the data dictionary
     # HINT see PS6 
-    # ...
+    reactions = data["reactions"];
+    for reaction ∈ reactions
+        id_value = reaction["id"]
+        push!(reaction_id_array, id_value);
+    end
+
 
     # return -
     return reaction_id_array;
@@ -44,7 +55,12 @@ function _build_metabolite_id_array(data::Dict{String,Any})::Array{String,1}
 
     # TODO: fill the metabolite_id_array with the metabolite id's from the data dictionary
     # HINT see PS6 
-    # ...
+    metabolites = data["metabolites"];
+    for metabolite ∈ metabolites
+        id_value = metabolite["id"];
+        push!(metabolite_id_array, id_value);
+    end
+
 
     # return -
     return metabolite_id_array;
@@ -64,7 +80,23 @@ function _build_stoichiometric_matrix(data::Dict{String,Any})::Array{Float64,2}
     
     # TODO: fill in the entries of the stochiometric matrix
     # HINT see PS6 
-    # ...
+    fill!(S,0.0);
+
+    # build the stochiometric matrix -
+    for i ∈ 1:number_of_metabolites
+        
+        # get a metabolite -
+        metabolite_id = list_of_metabolites[i]["id"]
+        
+        for j ∈ 1:number_of_reactions
+
+            # grab the reaction object, and then metabolites dictionary -
+            metabolite_dictionary = list_of_reactions[j]["metabolites"]
+            if (haskey(metabolite_dictionary, metabolite_id) == true)
+                S[i,j] = metabolite_dictionary[metabolite_id];
+            end
+        end
+    end
 
     # return -
     return S
@@ -80,7 +112,14 @@ function _build_composition_dictionary(compound::String)::Dict{Char,Float64}
 
     # TODO: Fill in the composition_dictionary for this compound -
     # HINT: See PS2 
-    # ...
+    model = MyChemicalCompoundModel(); # build an empty model 
+
+    # add data to the model -
+    model.name = name;
+    model.compound = compound;
+
+    # return -
+    return model;
 
     # return -
     return composition_dictionary;
@@ -97,7 +136,13 @@ function _build_atom_matrix(compounds::Array{MyChemicalCompoundModel,1})::Array{
     atom_matrix = Array{Float64,2}(undef, number_of_atoms, number_of_compounds);
 
     # TODO: Fill in the elements of the atom_matrix -
-    # ...
+    model = MyChemicalCompoundModel();
+
+    model.name = name;
+    model.compund = number_of_compounds;
+    model.atoms = number_of_atoms
+
+    return model;
 
     # return -
     return atom_matrix;
